@@ -57,30 +57,28 @@ async fn run_mcp_server(handler: RequestHandler) -> Result<()> {
 
                 // JSON-RPCリクエストをパース
                 match serde_json::from_str::<infrastructure::mcp::JsonRpcRequest>(trimmed) {
-                    Ok(request) => {
-                        match handler.handle_jsonrpc_request(request).await {
-                            Ok(response) => {
-                                let response_json = serde_json::to_string(&response)?;
-                                writeln!(stdout, "{}", response_json)?;
-                                stdout.flush()?;
-                            }
-                            Err(e) => {
-                                error!("Error handling request: {}", e);
-                                use google_gemini_image_creator::config::Config;
-                                let config = Config::from_env();
-                                let error_response = serde_json::json!({
-                                    "jsonrpc": config.jsonrpc_version(),
-                                    "error": {
-                                        "code": config.jsonrpc_error_codes.internal_error,
-                                        "message": format!("Internal error: {}", e)
-                                    },
-                                    "id": null
-                                });
-                                writeln!(stdout, "{}", error_response)?;
-                                stdout.flush()?;
-                            }
+                    Ok(request) => match handler.handle_jsonrpc_request(request).await {
+                        Ok(response) => {
+                            let response_json = serde_json::to_string(&response)?;
+                            writeln!(stdout, "{}", response_json)?;
+                            stdout.flush()?;
                         }
-                    }
+                        Err(e) => {
+                            error!("Error handling request: {}", e);
+                            use google_gemini_image_creator::config::Config;
+                            let config = Config::from_env();
+                            let error_response = serde_json::json!({
+                                "jsonrpc": config.jsonrpc_version(),
+                                "error": {
+                                    "code": config.jsonrpc_error_codes.internal_error,
+                                    "message": format!("Internal error: {}", e)
+                                },
+                                "id": null
+                            });
+                            writeln!(stdout, "{}", error_response)?;
+                            stdout.flush()?;
+                        }
+                    },
                     Err(e) => {
                         error!("Failed to parse request: {} - Input: {}", e, trimmed);
                         // パースエラーの場合もJSON-RPCエラーレスポンスを返す

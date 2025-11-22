@@ -14,7 +14,7 @@ fn test_gemini_model_default() {
 fn test_gemini_model_display() {
     let model1 = GeminiModel::from("gemini-2.5-flash-image".to_string());
     assert_eq!(model1.to_string(), "gemini-2.5-flash-image");
-    
+
     let model2 = GeminiModel::from("gemini-3-pro-image-preview".to_string());
     assert_eq!(model2.to_string(), "gemini-3-pro-image-preview");
 }
@@ -24,12 +24,12 @@ fn test_gemini_model_try_from() {
     // 注意: OnceLockのため、他のテストが先に実行された場合は反映されない可能性がある
     // このテストは、許可リストが空の場合の動作を確認する
     // 許可リストが設定されている場合は、そのリストに含まれるモデル名でテストする
-    
+
     // 標準的なモデル名でテストを試みる
     let result1 = GeminiModel::try_from("gemini-2.5-flash-image");
     let result2 = GeminiModel::try_from("gemini-3-pro-image-preview");
     let result3 = GeminiModel::try_from("custom-model-name");
-    
+
     // 許可リストが設定されている場合でも動作するように、複数のモデル名を試す
     // 許可リストが空の場合はすべて成功、設定されている場合はリストに含まれるもののみ成功
     let test_models = vec![
@@ -37,7 +37,7 @@ fn test_gemini_model_try_from() {
         ("gemini-3-pro-image-preview", &result2),
         ("custom-model-name", &result3),
     ];
-    
+
     let mut success_count = 0;
     for (name, result) in &test_models {
         if let Ok(model) = result {
@@ -45,7 +45,7 @@ fn test_gemini_model_try_from() {
             success_count += 1;
         }
     }
-    
+
     // 許可リストが空の場合はすべて成功する
     // 許可リストが設定されている場合は、そのリストに含まれるモデルのみ成功する
     // 少なくとも1つは成功するはず（許可リストが空の場合、または標準モデルが含まれている場合）
@@ -62,7 +62,7 @@ fn test_gemini_model_try_from() {
         // テストをスキップ（panicではなくreturn）
         return;
     }
-    
+
     // 成功したモデルが正しく動作することを確認
     assert!(success_count > 0, "At least one model should be allowed");
 }
@@ -73,17 +73,20 @@ fn test_gemini_model_allowed_list() {
     // 許可リストが既に設定されている可能性がある
     // 環境変数を設定してから初期化を試みる
     std::env::remove_var("GEMINI_DEFAULT_MODEL");
-    std::env::set_var("GEMINI_ALLOWED_MODELS", "gemini-2.5-flash-image,gemini-3-pro-image-preview");
-    
+    std::env::set_var(
+        "GEMINI_ALLOWED_MODELS",
+        "gemini-2.5-flash-image,gemini-3-pro-image-preview",
+    );
+
     // 初期化を試みる（既に初期化されている場合は反映されない）
     GeminiModel::init_from_env();
-    
+
     // 実際の動作を確認するため、try_fromでテスト
     // 標準的なモデル名を使用することで、他のテストとの競合を避ける
     let result1 = GeminiModel::try_from("gemini-2.5-flash-image");
     let result2 = GeminiModel::try_from("gemini-3-pro-image-preview");
     let result3 = GeminiModel::try_from("custom-model-name");
-    
+
     // 許可リストが正しく設定されていれば、gemini-2.5-flash-imageとgemini-3-pro-image-previewは成功し、
     // custom-model-nameは失敗する
     // ただし、OnceLockのため、既に初期化されている場合は反映されない可能性がある
@@ -97,7 +100,7 @@ fn test_gemini_model_allowed_list() {
         }
         // 許可リストが空の場合は、result3も成功する（これは正常な動作）
     }
-    
+
     std::env::remove_var("GEMINI_ALLOWED_MODELS");
 }
 
@@ -106,7 +109,7 @@ fn test_gemini_model_default_from_env() {
     // 注意: OnceLockは一度設定されると変更できないため、
     // このテストは環境変数の読み取り機能が正しく実装されていることを確認します
     // 実際の動作は統合テストで検証してください
-    
+
     // 環境変数が設定されていない場合のデフォルト値を確認
     std::env::remove_var("GEMINI_DEFAULT_MODEL");
     GeminiModel::init_default();
@@ -171,4 +174,3 @@ fn test_generated_image_new() {
     assert_eq!(image.data, data);
     assert_eq!(image.model.as_str(), model.as_str());
 }
-

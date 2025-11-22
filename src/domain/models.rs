@@ -77,7 +77,7 @@ impl TryFrom<&str> for GeminiModel {
 
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let model = Self(value.to_string());
-        
+
         // 許可されたモデルリストが設定されている場合は検証
         if !model.is_allowed() {
             return Err(ModelParseError::InvalidModel(format!(
@@ -168,5 +168,3 @@ pub enum ValidationError {
     #[error("Prompt too long: {0} characters (max: 10000)")]
     PromptTooLong(usize),
 }
-
-

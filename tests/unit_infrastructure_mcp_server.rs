@@ -7,4 +7,3 @@ fn test_list_tools() {
     assert_eq!(tools.len(), 1);
     assert_eq!(tools[0].name, "generate_image");
 }
-

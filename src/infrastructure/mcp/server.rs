@@ -17,10 +17,10 @@ impl McpServer {
     pub fn new(api_key: String) -> Self {
         // 環境変数から設定を読み取る
         GeminiModel::init_from_env();
-        
+
         let default_model = std::env::var("GEMINI_DEFAULT_MODEL")
             .unwrap_or_else(|_| "gemini-2.5-flash-image".to_string());
-        
+
         let allowed_models = std::env::var("GEMINI_ALLOWED_MODELS")
             .ok()
             .map(|s| {
@@ -78,17 +78,18 @@ impl McpServer {
     }
 
     /// ツール呼び出しを処理
-    pub async fn call_tool(&self, name: &str, arguments: &serde_json::Value) -> Result<CallToolResult> {
+    pub async fn call_tool(
+        &self,
+        name: &str,
+        arguments: &serde_json::Value,
+    ) -> Result<CallToolResult> {
         match name {
             "generate_image" => self.handle_generate_image(arguments).await,
             _ => Err(anyhow::anyhow!("Unknown tool: {}", name)),
         }
     }
 
-    async fn handle_generate_image(
-        &self,
-        arguments: &serde_json::Value,
-    ) -> Result<CallToolResult> {
+    async fn handle_generate_image(&self, arguments: &serde_json::Value) -> Result<CallToolResult> {
         info!("Handling generate_image request");
 
         // 引数のパース
@@ -109,14 +110,10 @@ impl McpServer {
         let request = ImageGenerationRequest::new(prompt).with_model(model);
 
         // ユースケースを実行
-        let image = self
-            .use_case
-            .execute(request)
-            .await
-            .map_err(|e| {
-                error!("Image generation failed: {}", e);
-                anyhow::anyhow!("Image generation failed: {}", e)
-            })?;
+        let image = self.use_case.execute(request).await.map_err(|e| {
+            error!("Image generation failed: {}", e);
+            anyhow::anyhow!("Image generation failed: {}", e)
+        })?;
 
         // 結果をbase64エンコードして返す
         use base64::Engine;
@@ -141,5 +138,3 @@ impl McpServer {
         })
     }
 }
-
-

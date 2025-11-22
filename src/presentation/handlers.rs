@@ -1,5 +1,5 @@
 use crate::config::Config;
-use crate::infrastructure::mcp::{JsonRpcRequest, JsonRpcResponse, JsonRpcError, McpServer};
+use crate::infrastructure::mcp::{JsonRpcError, JsonRpcRequest, JsonRpcResponse, McpServer};
 use anyhow::Result;
 use tracing::{error, info};
 
@@ -22,10 +22,7 @@ impl RequestHandler {
     }
 
     /// JSON-RPCリクエストを処理
-    pub async fn handle_jsonrpc_request(
-        &self,
-        request: JsonRpcRequest,
-    ) -> Result<JsonRpcResponse> {
+    pub async fn handle_jsonrpc_request(&self, request: JsonRpcRequest) -> Result<JsonRpcResponse> {
         let id = request.id.clone();
 
         match request.method.as_str() {
@@ -42,16 +39,19 @@ impl RequestHandler {
                 })
             }
             "tools/call" => {
-                let params = request.params.ok_or_else(|| {
-                    anyhow::anyhow!("Missing params for tools/call")
-                })?;
+                let params = request
+                    .params
+                    .ok_or_else(|| anyhow::anyhow!("Missing params for tools/call"))?;
 
                 let name = params
                     .get("name")
                     .and_then(|v| v.as_str())
                     .ok_or_else(|| anyhow::anyhow!("Missing 'name' in params"))?;
 
-                let arguments = params.get("arguments").cloned().unwrap_or(serde_json::json!({}));
+                let arguments = params
+                    .get("arguments")
+                    .cloned()
+                    .unwrap_or(serde_json::json!({}));
 
                 info!("Handling tools/call request: {}", name);
 
@@ -93,4 +93,3 @@ impl RequestHandler {
         }
     }
 }
-

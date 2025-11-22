@@ -39,5 +39,3 @@ impl From<reqwest::Error> for ImageGenerationError {
         }
     }
 }
-
-

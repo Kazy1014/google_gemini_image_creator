@@ -1,9 +1,9 @@
+use async_trait::async_trait;
 use google_gemini_image_creator::application::GenerateImageUseCase;
 use google_gemini_image_creator::domain::{
-    GeneratedImage, GeminiModel, ImageGenerationError, ImageGenerationRepository,
+    GeminiModel, GeneratedImage, ImageGenerationError, ImageGenerationRepository,
     ImageGenerationRequest,
 };
-use async_trait::async_trait;
 
 struct MockRepository {
     should_fail: bool,
@@ -61,4 +61,3 @@ async fn test_generate_image_use_case_repository_error() {
     use google_gemini_image_creator::application::use_cases::generate_image::UseCaseError;
     assert!(matches!(result.unwrap_err(), UseCaseError::Repository(_)));
 }
-

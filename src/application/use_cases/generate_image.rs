@@ -42,5 +42,3 @@ pub enum UseCaseError {
     #[error("Repository error: {0}")]
     Repository(#[from] ImageGenerationError),
 }
-
-

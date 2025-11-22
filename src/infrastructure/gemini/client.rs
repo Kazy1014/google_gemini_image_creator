@@ -1,5 +1,5 @@
 use crate::domain::{
-    GeneratedImage, GeminiModel, ImageGenerationError, ImageGenerationRepository,
+    GeminiModel, GeneratedImage, ImageGenerationError, ImageGenerationRepository,
     ImageGenerationRequest,
 };
 use async_trait::async_trait;
@@ -44,7 +44,10 @@ impl ImageGenerationRepository for GeminiClient {
         &self,
         request: &ImageGenerationRequest,
     ) -> Result<GeneratedImage, ImageGenerationError> {
-        let url = format!("{}/models/{}:generateContent", self.api_base_url, request.model);
+        let url = format!(
+            "{}/models/{}:generateContent",
+            self.api_base_url, request.model
+        );
 
         // Gemini APIのリクエストボディ
         let request_body = GeminiRequest {
@@ -150,9 +153,7 @@ fn extract_image_data(response: &GeminiResponse) -> Result<Vec<u8>, ImageGenerat
         .parts
         .iter()
         .find(|p| p.inline_data.is_some())
-        .ok_or_else(|| {
-            ImageGenerationError::ApiError("No image data in response".to_string())
-        })?;
+        .ok_or_else(|| ImageGenerationError::ApiError("No image data in response".to_string()))?;
 
     let inline_data = part
         .inline_data
@@ -165,5 +166,3 @@ fn extract_image_data(response: &GeminiResponse) -> Result<Vec<u8>, ImageGenerat
         .decode(&inline_data.data)
         .map_err(|e| ImageGenerationError::ApiError(format!("Failed to decode base64: {}", e)))
 }
-
-

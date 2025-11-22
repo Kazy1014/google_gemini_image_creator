@@ -43,8 +43,7 @@ impl Config {
     /// 環境変数から設定を読み込む
     pub fn from_env() -> Self {
         Self {
-            jsonrpc_version: env::var("JSONRPC_VERSION")
-                .unwrap_or_else(|_| "2.0".to_string()),
+            jsonrpc_version: env::var("JSONRPC_VERSION").unwrap_or_else(|_| "2.0".to_string()),
             gemini_api_base_url: env::var("GEMINI_API_BASE_URL")
                 .unwrap_or_else(|_| "https://generativelanguage.googleapis.com/v1beta".to_string()),
             gemini_default_model: env::var("GEMINI_DEFAULT_MODEL")
@@ -91,4 +90,3 @@ impl Config {
         self.max_prompt_length
     }
 }
-
