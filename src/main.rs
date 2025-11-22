@@ -8,7 +8,6 @@ use infrastructure::mcp::McpServer;
 use presentation::RequestHandler;
 use std::env;
 use tracing::{error, info};
-use tracing_subscriber;
 
 #[tokio::main]
 async fn main() -> Result<()> {
