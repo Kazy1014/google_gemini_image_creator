@@ -26,6 +26,24 @@ impl RequestHandler {
         let id = request.id.clone();
 
         match request.method.as_str() {
+            "initialize" => {
+                info!("Handling initialize request");
+                Ok(JsonRpcResponse {
+                    jsonrpc: self.config.jsonrpc_version().to_string(),
+                    id,
+                    result: Some(serde_json::json!({
+                        "protocolVersion": "2024-11-05",
+                        "capabilities": {
+                            "tools": {}
+                        },
+                        "serverInfo": {
+                            "name": "google-gemini-image-creator",
+                            "version": "0.1.0"
+                        }
+                    })),
+                    error: None,
+                })
+            }
             "tools/list" => {
                 info!("Handling tools/list request");
                 let tools = self.server.list_tools();

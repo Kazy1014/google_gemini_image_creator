@@ -14,6 +14,7 @@ async fn main() -> Result<()> {
     // ログの初期化
     tracing_subscriber::fmt()
         .with_writer(std::io::stderr)
+        .with_ansi(false)
         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
         .init();
 
