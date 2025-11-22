@@ -101,7 +101,7 @@ impl McpServer {
         let model = arguments
             .get("model")
             .and_then(|v| v.as_str())
-            .map(|s| GeminiModel::try_from(s))
+            .map(GeminiModel::try_from)
             .transpose()
             .map_err(|e| anyhow::anyhow!("Invalid model: {}", e))?
             .unwrap_or_else(|| GeminiModel::from(self.default_model.clone()));
