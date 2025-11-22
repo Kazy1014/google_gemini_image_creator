@@ -132,7 +132,9 @@ struct ResponsePart {
 
 #[derive(Debug, Deserialize)]
 struct InlineData {
-    mime_type: String,
+    #[serde(rename = "mimeType")]
+    #[allow(dead_code)]
+    mime_type: Option<String>, // APIレスポンスに含まれる可能性があるが、現在は未使用（将来の拡張用）
     data: String, // base64エンコードされた画像データ
 }
 
